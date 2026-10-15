@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Bizimana Supply Chain Analytics</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Procurement, inventory and service-level analytics by Ferdinand Bizimana">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a casebook. Profile header with headline results, then five numbered case files (each = brief, KPI strip, 1–2 charts, what I did), then methods and data note. */
+:root{
+  --bg:#f3f5f4; --panel:#ffffff; --ink:#14201c; --muted:#56635e; --faint:#8a9792; --line:#dde3e0; --grid:#e8ecea;
+  --accent:#0d6b50; --accent-2:#2a78d6; --accent-soft:#d7ece4; --tint:#eaf3ef;
+  --good:#0ca30c; --warn:#eda100; --serious:#ec835a; --crit:#d03b3b; --over:#2a78d6; --none:#b9c2be;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif; --body:"Public Sans","Segoe UI",Arial,sans-serif; --mono:"JetBrains Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1513; --panel:#171f1c; --ink:#e9efec; --muted:#a6b3ad; --faint:#76847e; --line:#29342f; --grid:#222c28;
+  --accent:#3fb98f; --accent-2:#3987e5; --accent-soft:#1e3a30; --tint:#1a2924;
+  --good:#0ca30c; --warn:#c98500; --serious:#ec835a; --crit:#e66767; --over:#3987e5; --none:#4d5a55; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1513; --panel:#171f1c; --ink:#e9efec; --muted:#a6b3ad; --faint:#76847e; --line:#29342f; --grid:#222c28;
+  --accent:#3fb98f; --accent-2:#3987e5; --accent-soft:#1e3a30; --tint:#1a2924;
+  --good:#0ca30c; --warn:#c98500; --serious:#ec835a; --crit:#e66767; --over:#3987e5; --none:#4d5a55; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(30px,5vw,46px);font-weight:800;line-height:1.05}
+h2{font-size:clamp(22px,3vw,28px);font-weight:700;line-height:1.15}
+h3{font-size:16px;font-weight:700}
+p{margin:0;max-width:68ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* header */
+.hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:28px;align-items:end;padding-bottom:24px;border-bottom:2px solid var(--ink)}
+.hero .lead{font-size:18px;color:var(--muted);margin-top:12px}
+.contact{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.contact .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.contact .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);width:72px}
+.copy{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:4px;padding:2px 8px;cursor:pointer}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.tag{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--ink)}
+
+/* headline results */
+.results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.res{background:var(--panel);padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.res .v{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.4vw,34px);line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.res .l{font-size:14px}
+.res .s{font-family:var(--mono);font-size:11px;color:var(--faint)}
+
+/* index */
+.index{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.index a{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:var(--ink);padding:12px;border-top:3px solid var(--accent);background:var(--panel);border-radius:0 0 6px 6px;font-size:13px}
+.index a:hover{background:var(--tint)}
+.index .n{font-family:var(--mono);font-size:11px;color:var(--accent)}
+
+/* case files */
+.case{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;display:flex;flex-direction:column;gap:20px;scroll-margin-top:16px}
+.case-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 20px;align-items:start}
+.case-head .file{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right;line-height:1.5}
+.brief{display:flex;flex-direction:column;gap:8px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.kpi{padding:12px 14px;background:var(--tint);border-radius:6px;display:flex;flex-direction:column;gap:2px}
+.kpi .v{font-family:var(--display);font-weight:700;font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12.5px;color:var(--muted)}
+.kpi .d{font-family:var(--mono);font-size:11px}
+.up{color:var(--accent)} .dn{color:var(--crit)}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.charts.one{grid-template-columns:minmax(0,1fr)}
+figure{margin:0;display:flex;flex-direction:column;gap:8px;min-width:0}
+figcaption{display:flex;flex-direction:column;gap:2px}
+figcaption b{font-family:var(--display);font-size:15px}
+figcaption span{font-size:13px;color:var(--muted)}
+.chart{width:100%;overflow-x:auto}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.did{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px;padding-top:16px;border-top:1px dashed var(--line)}
+.did h3{font-size:13px;font-family:var(--mono);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.did ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.src{font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.pill.good{background:color-mix(in srgb,var(--good) 18%,transparent)} .pill.crit{background:color-mix(in srgb,var(--crit) 18%,transparent)}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.good::before{background:var(--good)} .pill.crit::before{background:var(--crit)}
+
+/* svg text */
+.ax{fill:var(--muted);font-family:var(--mono);font-size:11px}
+.lbl{fill:var(--ink);font-family:var(--body);font-size:12.5px}
+.val{fill:var(--ink);font-family:var(--mono);font-size:11.5px;font-weight:600}
+.gl{stroke:var(--grid);stroke-width:1}
+.base{stroke:var(--faint);stroke-width:1}
+.hit{fill:transparent;cursor:default}
+.hit:hover + .mk, .row:hover .mk{opacity:.8}
+
+/* tooltip */
+#tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;line-height:1.4;padding:7px 10px;border-radius:6px;max-width:260px;opacity:0;transition:opacity .12s}
+#tip b{font-family:var(--display)}
+
+/* methods */
+.method{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;counter-reset:s;margin:0;padding:0;list-style:none}
+.method li{counter-increment:s;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--panel);display:flex;flex-direction:column;gap:4px;font-size:14px}
+.method li::before{content:"Step " counter(s);font-family:var(--mono);font-size:11px;color:var(--accent)}
+.method b{font-family:var(--display)}
+.note{font-size:13px;color:var(--muted);border-left:3px solid var(--line);padding-left:12px}
+footer{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;border-top:1px solid var(--line);padding-top:16px}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .index{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .charts,.did{grid-template-columns:minmax(0,1fr)}
+  .method{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:520px){
+  .results{grid-template-columns:minmax(0,1fr)}
+  .case{padding:16px}
+  .case-head{grid-template-columns:minmax(0,1fr)}
+  .case-head .file{text-align:left}
+  .method{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){#tip{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">Procurement &amp; supply chain analytics</div>
+    <h1>Ferdinand Bizimana</h1>
+    <p class="lead">I chair tender and negotiation committees at Rwanda Medical Supply and turn SAP and e-procurement data into decisions on price, competition, stock accuracy and service.</p>
+    <div class="tags">
+      <span class="tag">SAP S/4HANA EWM certified</span>
+      <span class="tag">MSc Procurement &amp; Supply Chain Mgmt</span>
+      <span class="tag">World Bank Public Procurement certificate</span>
+      <span class="tag">CMILT · Chartered Member, CILT</span>
+      <span class="tag">Excel · SAP · OCDS data</span>
+    </div>
+  </div>
+  <div class="contact">
+    <div class="row"><span class="k">Based in</span><span>Kigali, Rwanda</span></div>
+    <div class="row"><span class="k">Email</span><span class="mono" id="email">ferdinandbizimana9@gmail.com</span><button class="copy" id="copyEmail" type="button">Copy</button></div>
+    <div class="row"><span class="k">LinkedIn</span><a href="https://www.linkedin.com/in/ferdinandbizimana-87788717b" target="_blank" rel="noopener">ferdinandbizimana</a></div>
+    <div class="row"><span class="k">Current</span><span>Head of Inventory Monitoring Unit, RMS</span></div>
+  </div>
+</header>
+
+<section aria-labelledby="res-h" style="display:flex;flex-direction:column;gap:12px">
+  <h2 id="res-h" style="font-size:18px">Results as committee chair, Jan 2024 – present</h2>
+  <div class="results">
+    <div class="res"><span class="v">400+</span><span class="l">tenders chaired, all concluded successfully</span><span class="s">Internal Tender Committee records</span></div>
+    <div class="res"><span class="v">RWF 150bn+</span><span class="l">total value of tenders chaired</span><span class="s">Internal Tender Committee records</span></div>
+    <div class="res"><span class="v">76+</span><span class="l">tenders negotiated on price, quality and delivery period</span><span class="s">Negotiation Committee records</span></div>
+    <div class="res"><span class="v">41%</span><span class="l">sales growth, helped by lower prices and fewer stockouts</span><span class="s">RMS sales reporting</span></div>
+    <div class="res"><span class="v">~20%</span><span class="l">fewer missing-supplier cases</span><span class="s">Tender records</span></div>
+    <div class="res"><span class="v">250+</span><span class="l">SAP EWM users trained in rollout</span><span class="s">Training records</span></div>
+  </div>
+  <p class="note">I also co-drafted the RMS Procurement Manual now in force. The five case files below show the analysis behind this work. Each one names its data source.</p>
+</section>
+
+<nav class="index" aria-label="Case files">
+  <a href="#c1"><span class="n">Case 01</span>Public tender market</a>
+  <a href="#c2"><span class="n">Case 02</span>Competition &amp; value risk</a>
+  <a href="#c3"><span class="n">Case 03</span>Inventory accuracy</a>
+  <a href="#c4"><span class="n">Case 04</span>Order fill rate</a>
+  <a href="#c5"><span class="n">Case 05</span>Stock sufficiency</a>
+</nav>
+
+<!-- CASE 1 -->
+<section class="case" id="c1">
+  <div class="case-head">
+    <div class="brief">
+      <div class="eyebrow">Case 01 · Procurement analytics</div>
+      <h2>Rwanda's public tender market in one month</h2>
+      <p class="muted">I built a tender monitor from 5,005 Umucyo e-procurement releases. I de-duplicated them to 1,697 tenders and read method and category from the tender reference codes.</p>
+    </div>
+    <div class="file">Umucyo OCDS releases<br>1–31 Dec 2024<br>public data</div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><span class="v">1,697</span><span class="l">unique tenders, 196 procuring entities</span></div>
+    <div class="kpi"><span class="v">RWF 542bn</span><span class="l">disclosed value (≈ USD 393M)</span></div>
+    <div class="kpi"><span class="v">88%</span><span class="l">of tenders used open bidding</span></div>
+    <div class="kpi"><span class="v dn">25%</span><span class="l">of value went single-source (7% of tenders)</span></div>
+  </div>
+  <div class="charts">
+    <figure>
+      <figcaption><b>Count and value tell different stories</b><span>Share of tenders vs share of disclosed value, by method</span></figcaption>
+      <div class="legend"><span><i style="background:var(--none)"></i>Share of tenders</span><span><i style="background:var(--accent)"></i>Share of value</span></div>
+      <div class="chart" id="ch-method"></div>
+    </figure>
+    <figure>
+      <figcaption><b>95 tenders hold 75% of the money</b><span>Tenders above RWF 1bn vs the 71% of tenders below RWF 100M</span></figcaption>
+      <div class="legend"><span><i style="background:var(--none)"></i>Share of tenders</span><span><i style="background:var(--accent)"></i>Share of value</span></div>
+      <div class="chart" id="ch-band"></div>
+    </figure>
+  </div>
+  <div class="did">
+    <div><h3>What I did</h3><ul><li>Parsed OCDS JSON releases and kept the latest release per OCID</li><li>Mapped national methods (NCB, ICB, SS, NRT, IRT, RFQ) to OCDS categories</li><li>Removed 207 undisclosed and 9 placeholder values before analysing value</li></ul></div>
+    <div><h3>What it means for a buyer</h3><ul><li>Value sits in a few large tenders, so review effort should follow value, not count</li><li>Frequent low-value services (28% of tenders, RWF 5–20M) suit framework agreements</li></ul></div>
+  </div>
+  <p class="src">Source: Rwanda e-procurement (Umucyo) OCDS releases; Rwanda Tenders Dec 2024 report and Umucyo Tender Monitor (my work).</p>
+</section>
+
+<!-- CASE 2 -->
+<section class="case" id="c2">
+  <div class="case-head">
+    <div class="brief">
+      <div class="eyebrow">Case 02 · Procurement risk</div>
+      <h2>Where competition breaks down</h2>
+      <p class="muted">The single-bid rate is a standard red flag for weak competition. I measured it by method and checked how many bidders each tender drew.</p>
+    </div>
+    <div class="file">Same dataset<br>1,697 tenders</div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><span class="v dn">17.6%</span><span class="l">of tenders received a single bid</span></div>
+    <div class="kpi"><span class="v">3</span><span class="l">median bidders per tender</span></div>
+    <div class="kpi"><span class="v">200</span><span class="l">open or restricted tenders still got one bid</span></div>
+    <div class="kpi"><span class="v dn">RWF 94.7bn</span><span class="l">single-source works across 18 tenders</span></div>
+  </div>
+  <div class="charts">
+    <figure>
+      <figcaption><b>Restricted and quotation methods draw few bidders</b><span>Single-bid rate by procurement method</span></figcaption>
+      <div class="chart" id="ch-single"></div>
+    </figure>
+    <figure>
+      <figcaption><b>One tender in six had a single bidder</b><span>Tenders by number of bids received (latest release)</span></figcaption>
+      <div class="chart" id="ch-bids"></div>
+    </figure>
+  </div>
+  <div class="did">
+    <div><h3>Recommendations I made</h3><ul><li>Ex-post review of the 18 single-source works tenders (RWF 94.7bn)</li><li>Target entities with single-bid rates above 30% with wider advertising and simpler qualification</li><li>Make estimated value and budget mandatory fields; block placeholder amounts</li></ul></div>
+    <div><h3>How I use this at RMS</h3><ul><li>The same competition checks guide which tenders go to negotiation</li><li>Supplier market engagement helped cut missing-supplier cases by about 20%</li></ul></div>
+  </div>
+  <p class="src">Source: Umucyo OCDS releases, Dec 2024. Zero-bid tenders (282) were mostly still open at month-end.</p>
+</section>
+
+<!-- CASE 3 -->
+<section class="case" id="c3">
+  <div class="case-head">
+    <div class="brief">
+      <div class="eyebrow">Case 03 · Inventory control</div>
+      <h2>Year-end count: from 86.8% to 99.4% SKU accuracy</h2>
+      <p class="muted">I led the analysis of a national medical-stock count across 28 storage plants. Every one of 5,156 SAP adjustment lines was reviewed, with no sampling. A line counted as explained only when it quoted a supporting document.</p>
+    </div>
+    <div class="file">Physical inventory count<br>30 Jun 2026 · FY2025/26<br>employer data, anonymised</div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><span class="v">10,659</span><span class="l">SKUs counted in 28 plants (~RWF 82bn stock)</span></div>
+    <div class="kpi"><span class="v up">99.98%</span><span class="l">value accuracy after justification</span><span class="d muted">from 98.28% raw</span></div>
+    <div class="kpi"><span class="v up">97.2%</span><span class="l">of lines justified, covering 99.4% of value</span></div>
+    <div class="kpi"><span class="v dn">144</span><span class="l">open lines, each with an owner and due date</span></div>
+  </div>
+  <div class="charts">
+    <figure>
+      <figcaption><b>Justification closed most gaps; two sites stayed critical</b><span>SKU accuracy before → after justification, plants below 90% before. Target 98%.</span></figcaption>
+      <div class="legend"><span><i style="background:var(--none);border-radius:50%"></i>Raw count</span><span><i style="background:var(--accent);border-radius:50%"></i>After justification</span></div>
+      <div class="chart" id="ch-plants"></div>
+    </figure>
+    <figure>
+      <figcaption><b>Half of the gross variance was netting-off</b><span>Root cause, % of RWF 5.7bn gross variance (excess and missing never netted)</span></figcaption>
+      <div class="chart" id="ch-root"></div>
+    </figure>
+  </div>
+  <div class="did">
+    <div><h3>What I did</h3><ul><li>Reconciled MB5B/GL closing stock with counted stock per plant, material and WBS</li><li>Classified every variance line into 16 root causes from its reason and action text</li><li>Built the accuracy standard: Good = SKU ≥ 98% and value ≥ 99.5%</li></ul></div>
+    <div><h3>What changed</h3><ul><li>Open lines went into a register with owners and a 31 Oct deadline</li><li>Rule adopted: no justification is accepted without a document number</li><li>Netting and batch-swap findings fed a corrective action plan for count procedures</li></ul></div>
+  </div>
+  <p class="src">Source: RMS Physical Inventory Count Report and Final Variance Investigation Workbook, 30 Jun 2026 (my work). Site names withheld.</p>
+</section>
+
+<!-- CASE 4 -->
+<section class="case" id="c4">
+  <div class="case-head">
+    <div class="brief">
+      <div class="eyebrow">Case 04 · Service level</div>
+      <h2>What stockouts cost in lost sales</h2>
+      <p class="muted">I measured order fill rate across 906,061 sales-order lines for the year. Value ordered but not delivered is revenue lost, mostly to stockouts. This is the link between better procurement and higher sales.</p>
+    </div>
+    <div class="file">SAP VA05 order lines<br>Jul 2025 – Jun 2026<br>employer data, anonymised</div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><span class="v">95.7%</span><span class="l">of ordered value delivered</span><span class="d up">above 95% target</span></div>
+    <div class="kpi"><span class="v dn">90.8%</span><span class="l">of lines delivered in full</span><span class="d dn">below 95% target</span></div>
+    <div class="kpi"><span class="v dn">RWF 5.2bn</span><span class="l">ordered value not delivered</span></div>
+    <div class="kpi"><span class="v">9.1%</span><span class="l">of lines received nothing</span></div>
+  </div>
+  <div class="charts one">
+    <figure>
+      <figcaption><b>Value fill rate held near target; line fill rate did not</b><span>Monthly delivered value % and lines delivered in full %, FY2025/26</span></figcaption>
+      <div class="legend"><span><i style="background:var(--accent)"></i>Delivered value % of ordered</span><span><i style="background:var(--accent-2)"></i>Lines delivered in full %</span><span><i style="background:var(--crit);height:2px;vertical-align:3px"></i>95% target</span></div>
+      <div class="chart" id="ch-fill"></div>
+    </figure>
+  </div>
+  <div class="did">
+    <div><h3>What I did</h3><ul><li>Joined ordered and delivered quantities per line and priced the shortfall</li><li>Split results by stock owner, plant and month</li><li>Ranked plants by lowest fill rate to target replenishment</li></ul></div>
+    <div><h3>Why it matters</h3><ul><li>Lost revenue peaked at RWF 940M in March 2026</li><li>Branch fill rates ranged from 75% to 99%, so the fix is local, not network-wide</li></ul></div>
+  </div>
+  <p class="src">Source: RMS Order Fill Rate Workbook FY2025/26 (VA05), summarised in the Variance Investigation Workbook (my work).</p>
+</section>
+
+<!-- CASE 5 -->
+<section class="case" id="c5">
+  <div class="case-head">
+    <div class="brief">
+      <div class="eyebrow">Case 05 · Demand &amp; supply planning</div>
+      <h2>Which health programmes are about to run out</h2>
+      <p class="muted">For donor-funded programme stock, I compared national stock with average monthly consumption (AMC) for 148 products. Months of stock below 3 flags a stock-out risk.</p>
+    </div>
+    <div class="file">Programme stock &amp; AMC<br>stock at 29 Jul 2026<br>quarterly accountability report</div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><span class="v dn">28</span><span class="l">products at stock-out risk (&lt; 3 months)</span></div>
+    <div class="kpi"><span class="v">33</span><span class="l">products understocked</span></div>
+    <div class="kpi"><span class="v">50</span><span class="l">products overstocked</span></div>
+    <div class="kpi"><span class="v">2.7</span><span class="l">months of stock at central level, value-weighted</span></div>
+  </div>
+  <div class="charts one">
+    <figure>
+      <figcaption><b>Lab and maternal-health products carry most of the risk</b><span>Products by stock status, per programme (national months of stock ÷ AMC)</span></figcaption>
+      <div class="legend" id="lg-amc"></div>
+      <div class="chart" id="ch-amc"></div>
+    </figure>
+  </div>
+  <div class="did">
+    <div><h3>What I did</h3><ul><li>Matched SAP materials to the weekly national stock report and AMC</li><li>Projected the month each product falls below 3 months, using the pipeline</li><li>Flagged 884 products with no AMC data for regular monitoring</li></ul></div>
+    <div><h3>Decision it supports</h3><ul><li>Prioritise emergency orders for at-risk products</li><li>Slow orders where stock is above the maximum level (RWF 1.9bn)</li></ul></div>
+  </div>
+  <p class="src">Source: quarterly programme stock accountability report, end June 2026 (my work).</p>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:14px" aria-labelledby="m-h">
+  <h2 id="m-h">How I work with data</h2>
+  <ol class="method">
+    <li><b>Extract</b>From SAP (MB5B, VA05, MI documents) and public OCDS feeds.</li>
+    <li><b>Reconcile</b>Agree every total to the ledger before any analysis.</li>
+    <li><b>Classify</b>Root causes, methods and statuses with written, repeatable rules.</li>
+    <li><b>Decide</b>Reports, dashboards and action plans with owners and dates.</li>
+  </ol>
+  <p class="note">Employer figures are aggregated and site and product names are removed. Detailed workings are available on request, subject to the employer's approval. Tender market data is public.</p>
+</section>
+
+<footer>
+  <span>Ferdinand Bizimana · Kigali, Rwanda</span>
+  <span>Figures as at October 2026</span>
+</footer>
+</div>
+
+<div id="tip" role="tooltip"></div>
+
+<script>
+(function(){
+const NS="http://www.w3.org/2000/svg";
+const tip=document.getElementById("tip");
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function text(parent,x,y,str,cls,anchor){const t=el("text",{x,y,class:cls,"text-anchor":anchor||"start","dominant-baseline":"middle"},parent);t.textContent=str;return t;}
+function showTip(ev,html){tip.innerHTML=html;tip.style.opacity=1;moveTip(ev);}
+function moveTip(ev){const w=tip.offsetWidth,h=tip.offsetHeight;let x=ev.clientX+14,y=ev.clientY+14;if(x+w>innerWidth-8)x=ev.clientX-w-14;if(y+h>innerHeight-8)y=ev.clientY-h-14;tip.style.left=x+"px";tip.style.top=y+"px";}
+function hideTip(){tip.style.opacity=0;}
+function hover(node,html){node.addEventListener("pointerenter",e=>showTip(e,html));node.addEventListener("pointermove",moveTip);node.addEventListener("pointerleave",hideTip);}
+const pct=(v,d)=> (v*100).toFixed(d==null?1:d)+"%";
+// rounded-end bar path (rounded at the data end only)
+function barPath(x,y,w,h,r){r=Math.min(r,w,h/2);if(w<=0)return "";return `M${x},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h-r}Q${x+w},${y+h} ${x+w-r},${y+h}H${x}Z`;}
+
+/* Paired horizontal bars: two measures on one 0–max % scale */
+function paired(id,rows,max){
+  const host=document.getElementById(id);
+  const W=520,lw=178,rw=48,rowH=40,top=8,H=top+rows.length*rowH+24;
+  const svg=el("svg",{viewBox:`0 0 ${W} ${H}`,role:"img"},host);
+  const x=v=>lw+(v/max)*(W-lw-rw);
+  for(let t=0;t<=max;t+=max/4){el("line",{x1:x(t),x2:x(t),y1:top,y2:H-20,class:"gl"},svg);text(svg,x(t),H-8,Math.round(t*100)+"%","ax","middle");}
+  rows.forEach((r,i)=>{
+    const y=top+i*rowH;
+    const g=el("g",{},svg);
+    text(g,lw-10,y+rowH/2-1,r.name,"lbl","end");
+    el("path",{d:barPath(lw,y+7,x(r.a)-lw,11,3),fill:"var(--none)"},g);
+    el("path",{d:barPath(lw,y+20,x(r.b)-lw,11,3),fill:"var(--accent)"},g);
+    text(g,x(r.b)+5,y+25.5,pct(r.b,0),"val");
+    const hit=el("rect",{x:0,y:y,width:W,height:rowH,class:"hit"},g);
+    hover(hit,`<b>${r.name}</b><br>${r.na||""}Share of tenders: ${pct(r.a)}<br>Share of value: ${pct(r.b)}`);
+  });
+  el("line",{x1:lw,x2:lw,y1:top,y2:H-20,class:"base"},svg);
+}
+paired("ch-method",[
+  {name:"National competitive",a:1419/1697,b:.2848,na:"1,419 tenders · "},
+  {name:"International competitive",a:81/1697,b:.3595,na:"81 tenders · "},
+  {name:"Single source",a:121/1697,b:.2487,na:"121 tenders · RWF 134.9bn · "},
+  {name:"Intl. restricted",a:6/1697,b:.0999,na:"6 tenders · "},
+  {name:"National restricted",a:36/1697,b:.0065,na:"36 tenders · "},
+  {name:"Request for quotations",a:34/1697,b:.0006,na:"34 tenders · "}
+],1);
+const bandN=1481;
+paired("ch-band",[
+  {name:"Under RWF 100M",a:(114+414+320+200)/bandN,b:.0005+.0084+.0185+.0255,na:"1,048 tenders · "},
+  {name:"RWF 100M – 500M",a:267/bandN,b:.1069,na:"267 tenders · "},
+  {name:"RWF 500M – 1bn",a:71/bandN,b:.0894,na:"71 tenders · "},
+  {name:"RWF 1bn – 5bn",a:79/bandN,b:.3080,na:"79 tenders · "},
+  {name:"Over RWF 5bn",a:16/bandN,b:.4428,na:"16 tenders · "}
+],1);
+
+/* Single-series horizontal bars */
+function hbars(id,rows,opts){
+  const host=document.getElementById(id);
+  const W=520,lw=opts.lw||150,rw=56,rowH=opts.rowH||30,top=6,H=top+rows.length*rowH+24;
+  const max=opts.max;
+  const svg=el("svg",{viewBox:`0 0 ${W} ${H}`,role:"img"},host);
+  const x=v=>lw+(v/max)*(W-lw-rw);
+  opts.ticks.forEach(t=>{el("line",{x1:x(t),x2:x(t),y1:top,y2:H-20,class:"gl"},svg);text(svg,x(t),H-8,opts.fmtTick(t),"ax","middle");});
+  rows.forEach((r,i)=>{
+    const y=top+i*rowH,bh=Math.min(16,rowH-10);
+    const g=el("g",{},svg);
+    text(g,lw-10,y+rowH/2,r.name,"lbl","end");
+    el("path",{d:barPath(lw,y+(rowH-bh)/2,Math.max(1,x(r.v)-lw),bh,4),fill:r.color||"var(--accent)"},g);
+    text(g,x(r.v)+6,y+rowH/2,opts.fmt(r.v),"val");
+    const hit=el("rect",{x:0,y,width:W,height:rowH,class:"hit"},g);
+    hover(hit,`<b>${r.name}</b><br>${r.tip||opts.fmt(r.v)}`);
+  });
+  el("line",{x1:lw,x2:lw,y1:top,y2:H-20,class:"base"},svg);
+  if(opts.ref!=null){const rx=x(opts.ref);el("line",{x1:rx,x2:rx,y1:top,y2:H-20,stroke:"var(--crit)","stroke-width":1.5,"stroke-dasharray":"4 3"},svg);}
+}
+hbars("ch-single",[
+  {name:"Single source",v:.818,tip:"81.8% single-bid (by design) · 0.8 bidders avg",color:"var(--crit)"},
+  {name:"National restricted",v:.417,tip:"41.7% single-bid · 1.75 bidders avg",color:"var(--crit)"},
+  {name:"Request for quotations",v:.324,tip:"32.4% single-bid · 1.4 bidders avg",color:"var(--crit)"},
+  {name:"Intl. restricted",v:.167,tip:"16.7% single-bid · 2.2 bidders avg"},
+  {name:"National competitive",v:.118,tip:"11.8% single-bid · 4.5 bidders avg"},
+  {name:"International competitive",v:.062,tip:"6.2% single-bid · 6.9 bidders avg"}
+],{lw:178,max:1,ticks:[0,.25,.5,.75,1],fmtTick:t=>Math.round(t*100)+"%",fmt:v=>pct(v,0),ref:.3});
+{
+ const n=document.createElement("div");n.className="legend";n.innerHTML='<span><i style="background:var(--crit)"></i>Above 30% review threshold</span><span><i style="background:var(--accent)"></i>Below threshold</span>';
+ document.getElementById("ch-single").before(n);
+}
+hbars("ch-bids",[
+  {name:"0 bids",v:282,tip:"282 tenders · mostly still open at month-end",color:"var(--none)"},
+  {name:"1 bid",v:299,tip:"299 tenders (17.6%)",color:"var(--crit)"},
+  {name:"2 bids",v:190},
+  {name:"3–4 bids",v:316},
+  {name:"5–9 bids",v:430},
+  {name:"10+ bids",v:180}
+],{lw:80,max:500,ticks:[0,100,200,300,400,500],fmtTick:t=>t,fmt:v=>v.toLocaleString("en")+""});
+
+/* Dumbbell: before -> after, % scale */
+(function(){
+  const rows=[
+    {name:"All plants",a:.8678,b:.9935,r:"Good"},
+    {name:"Partner-operated store",a:.2239,b:.9403,r:"Critical"},
+    {name:"Kigali distribution hub",a:.3078,b:.9957,r:"Good"},
+    {name:"Branch A",a:.6980,b:.8627,r:"Critical"},
+    {name:"Branch B",a:.7895,b:.9816,r:"Good"},
+    {name:"Central warehouse",a:.8810,b:1,r:"Good"},
+    {name:"Branch C",a:.8814,b:.9966,r:"Good"},
+    {name:"Branch D",a:.8937,b:.9971,r:"Good"}
+  ];
+  const host=document.getElementById("ch-plants");
+  const W=520,lw=160,rw=70,rowH=32,top=6,H=top+rows.length*rowH+24;
+  const svg=el("svg",{viewBox:`0 0 ${W} ${H}`,role:"img"},host);
+  const x=v=>lw+(v)*(W-lw-rw);
+  [0,.25,.5,.75,1].forEach(t=>{el("line",{x1:x(t),x2:x(t),y1:top,y2:H-20,class:"gl"},svg);text(svg,x(t),H-8,Math.round(t*100)+"%","ax","middle");});
+  const rx=x(.98);el("line",{x1:rx,x2:rx,y1:top,y2:H-20,stroke:"var(--crit)","stroke-width":1.5,"stroke-dasharray":"4 3"},svg);
+  rows.forEach((r,i)=>{
+    const y=top+i*rowH+rowH/2;const g=el("g",{},svg);
+    if(i===0){el("rect",{x:0,y:y-rowH/2+1,width:W,height:rowH-2,fill:"var(--tint)",rx:4},g);}
+    text(g,lw-10,y,r.name,"lbl","end").setAttribute("font-weight",i===0?"700":"400");
+    el("line",{x1:x(r.a),x2:x(r.b),y1:y,y2:y,stroke:"var(--faint)","stroke-width":2},g);
+    el("circle",{cx:x(r.a),cy:y,r:5,fill:"var(--none)",stroke:"var(--panel)","stroke-width":2},g);
+    el("circle",{cx:x(r.b),cy:y,r:5.5,fill:r.r==="Critical"?"var(--crit)":"var(--accent)",stroke:"var(--panel)","stroke-width":2},g);
+    text(g,W-rw+18,y,pct(r.b),"val");
+    const hit=el("rect",{x:0,y:y-rowH/2,width:W,height:rowH,class:"hit"},g);
+    hover(hit,`<b>${r.name}</b><br>Raw count: ${pct(r.a)}<br>After justification: ${pct(r.b)}<br>Rating: ${r.r}`);
+  });
+  const n=document.createElement("div");n.className="legend";n.innerHTML='<span><i style="background:var(--crit);border-radius:50%"></i>Still critical after justification</span><span style="color:var(--muted)">Dashed line = 98% target</span>';
+  host.after(n);
+})();
+
+hbars("ch-root",[
+  {name:"Netting-off between lines",v:.491,tip:"1,713 lines · RWF 2.81bn gross"},
+  {name:"Batch exchange",v:.156,tip:"1,106 lines · no material-level loss"},
+  {name:"Prior reversal / cut-off",v:.154,tip:"665 lines"},
+  {name:"Historical variance",v:.061,tip:"203 lines · proposed to retained earnings",color:"var(--serious)"},
+  {name:"Expired / damaged",v:.044,tip:"250 lines · write-off",color:"var(--serious)"},
+  {name:"Counting error",v:.042,tip:"754 lines · recount",color:"var(--serious)"},
+  {name:"Duplicate posting",v:.015,tip:"68 lines"},
+  {name:"Other (9 causes)",v:.037,tip:"Sales not in SAP, UoM errors, timing, unsupported and others",color:"var(--none)"}
+],{lw:170,rowH:28,max:.6,ticks:[0,.2,.4,.6],fmtTick:t=>Math.round(t*100)+"%",fmt:v=>pct(v)});
+{
+ const n=document.createElement("div");n.className="legend";n.innerHTML='<span><i style="background:var(--accent)"></i>Timing or posting (no physical loss)</span><span><i style="background:var(--serious)"></i>Real loss or count error</span>';
+ document.getElementById("ch-root").before(n);
+}
+
+/* Line chart: monthly fill rate */
+(function(){
+  const m=["Jul","Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun"];
+  const yr=["2025","2025","2025","2025","2025","2025","2026","2026","2026","2026","2026","2026"];
+  const val=[.9994,.9614,.9091,.9566,.9380,.9422,.9532,.9426,.8875,.9558,.9905,.9560];
+  const dif=[.9986,.9582,.8732,.8910,.8931,.8923,.8918,.9003,.9035,.9137,.9156,.8870];
+  const lost=[3.31,237.4,684.9,356.0,493.0,498.5,216.7,454.8,939.7,537.0,312.9,453.4];
+  const host=document.getElementById("ch-fill");
+  const W=1000,H=300,l=48,r=20,t=14,b=34;
+  const svg=el("svg",{viewBox:`0 0 ${W} ${H}`,role:"img"},host);
+  const lo=.85,hi=1;
+  const x=i=>l+i*(W-l-r)/(m.length-1), y=v=>t+(hi-v)/(hi-lo)*(H-t-b);
+  [.85,.9,.95,1].forEach(v=>{el("line",{x1:l,x2:W-r,y1:y(v),y2:y(v),class:"gl"},svg);text(svg,l-8,y(v),Math.round(v*100)+"%","ax","end");});
+  m.forEach((mm,i)=>text(svg,x(i),H-14,mm+(i===0||i===6?" "+yr[i].slice(2):""),"ax","middle"));
+  el("line",{x1:l,x2:W-r,y1:y(.95),y2:y(.95),stroke:"var(--crit)","stroke-width":1.5,"stroke-dasharray":"5 4"},svg);
+  const area=`M${x(0)},${y(lo)} `+val.map((v,i)=>`L${x(i)},${y(v)}`).join(" ")+` L${x(11)},${y(lo)}Z`;
+  el("path",{d:area,fill:"var(--accent)",opacity:.08},svg);
+  const line=(arr,c)=>el("path",{d:arr.map((v,i)=>(i?"L":"M")+x(i)+","+y(v)).join(" "),fill:"none",stroke:c,"stroke-width":2,"stroke-linejoin":"round"},svg);
+  line(val,"var(--accent)");line(dif,"var(--accent-2)");
+  [[val,"var(--accent)"],[dif,"var(--accent-2)"]].forEach(([arr,c])=>el("circle",{cx:x(11),cy:y(arr[11]),r:4.5,fill:c,stroke:"var(--panel)","stroke-width":2},svg));
+  // annotate March low
+  text(svg,x(8),y(val[8])+16,"Mar 26: RWF 940M not delivered","ax","middle");
+  const cross=el("line",{x1:0,x2:0,y1:t,y2:H-b,stroke:"var(--faint)","stroke-width":1,opacity:0},svg);
+  const dots=[el("circle",{r:4,fill:"var(--accent)",opacity:0},svg),el("circle",{r:4,fill:"var(--accent-2)",opacity:0},svg)];
+  const hit=el("rect",{x:l,y:t,width:W-l-r,height:H-t-b,class:"hit"},svg);
+  hit.addEventListener("pointermove",ev=>{
+    const pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+    const i=Math.max(0,Math.min(11,Math.round((p.x-l)/((W-l-r)/11))));
+    cross.setAttribute("x1",x(i));cross.setAttribute("x2",x(i));cross.setAttribute("opacity",1);
+    dots[0].setAttribute("cx",x(i));dots[0].setAttribute("cy",y(val[i]));dots[0].setAttribute("opacity",1);
+    dots[1].setAttribute("cx",x(i));dots[1].setAttribute("cy",y(dif[i]));dots[1].setAttribute("opacity",1);
+    showTip(ev,`<b>${m[i]} ${yr[i]}</b><br>Value delivered: ${pct(val[i])}<br>Lines in full: ${pct(dif[i])}<br>Not delivered: RWF ${lost[i].toFixed(0)}M`);
+  });
+  hit.addEventListener("pointerleave",()=>{hideTip();cross.setAttribute("opacity",0);dots.forEach(d=>d.setAttribute("opacity",0));});
+})();
+
+/* 100% stacked bars: AMC status by programme */
+(function(){
+  const cats=[["Stock-out risk","var(--crit)"],["Understock","var(--warn)"],["Stocked to plan","var(--good)"],["Overstock","var(--over)"],["No AMC","var(--none)"]];
+  const rows=[
+    ["Laboratory (HIV & program)",[14,10,3,3,0]],
+    ["Maternal & child health",[5,10,4,5,0]],
+    ["Hepatitis",[3,1,3,3,0]],
+    ["Male circumcision (VMMC)",[1,1,1,1,0]],
+    ["HIV & opportunistic infections",[4,4,9,14,0]],
+    ["Tuberculosis",[1,6,10,18,0]],
+    ["Malaria & NTD",[0,1,5,6,2]],
+    ["All programmes",[28,33,35,50,2]]
+  ];
+  document.getElementById("lg-amc").innerHTML=cats.map(c=>`<span><i style="background:${c[1]}"></i>${c[0]}</span>`).join("");
+  const host=document.getElementById("ch-amc");
+  const W=1000,lw=230,rw=60,rowH=34,top=4,H=top+rows.length*rowH+24;
+  const svg=el("svg",{viewBox:`0 0 ${W} ${H}`,role:"img"},host);
+  const span=W-lw-rw;
+  [0,.25,.5,.75,1].forEach(t=>{const xx=lw+t*span;el("line",{x1:xx,x2:xx,y1:top,y2:H-20,class:"gl"},svg);text(svg,xx,H-8,Math.round(t*100)+"%","ax","middle");});
+  rows.forEach(([name,v],i)=>{
+    const y=top+i*rowH,tot=v.reduce((a,b)=>a+b,0),last=i===rows.length-1;
+    const g=el("g",{},svg);
+    if(last)el("rect",{x:0,y:y+1,width:W,height:rowH-2,fill:"var(--tint)",rx:4},g);
+    const tl=text(g,lw-10,y+rowH/2,name,"lbl","end");if(last)tl.setAttribute("font-weight","700");
+    let acc=0;
+    v.forEach((n,k)=>{ if(!n)return;
+      const x0=lw+acc/tot*span, w=n/tot*span; acc+=n;
+      const seg=el("rect",{x:x0+1,y:y+8,width:Math.max(0,w-2),height:rowH-16,fill:cats[k][1],rx:2},g);
+      if(w>26)text(g,x0+w/2,y+rowH/2,n,"val","middle").setAttribute("style","fill:#fff;pointer-events:none");
+      hover(seg,`<b>${name}</b><br>${cats[k][0]}: ${n} of ${tot} products (${pct(n/tot,0)})`);
+    });
+    text(g,W-rw+10,y+rowH/2,tot+" items","ax");
+  });
+})();
+
+/* copy email */
+document.getElementById("copyEmail").addEventListener("click",function(){
+  const t=document.getElementById("email").textContent,b=this;
+  const sel=()=>{const r=document.createRange();r.selectNodeContents(document.getElementById("email"));const s=getSelection();s.removeAllRanges();s.addRange(r);};
+  try{navigator.clipboard.writeText(t).then(()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1500);}).catch(sel);}catch(e){sel();}
+});
+})();
+</script>
+
+</body>
+</html>
